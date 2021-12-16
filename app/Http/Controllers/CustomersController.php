@@ -2,32 +2,46 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\Company;
 use App\Model\Customer;
 use Illuminate\Http\Request;
 
 class CustomersController extends Controller
 {
-    public function list()
+    public function index()
     {
         $customers = Customer::all();
+        
 
-        return view ('internals.customers',[
-            'customers' => $customers,
-        ]);
+        return view ('customers.index', compact('customers'));
     }
+
+    public function create()
+    {
+        $companies = Company::all();
+
+        return view('customers.create', compact('companies'));
+    }
+
 
     public function store()
     {
         $data = request()->validate([
             'name' => 'required | min:3',
-            'email' => 'required | email'
+            'email' => 'required | email',
+            'active' => 'required',
+            'company_id' => 'required'
         ]);
 
-        $customer = new Customer();
-        $customer->name = request('name');
-        $customer->email = request('email');
-        $customer->save();
+        Customer::create($data);
 
-        return back();
+        return redirect('customers');
+    }
+
+    public function show(Customer $customer)
+    {
+        //$customer = Customer::where('id', $customer)->firstOrFail();  
+
+        return view('customers.show', compact('customer'));
     }
 }
